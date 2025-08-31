@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:rhyme/features/home/home.dart';
+import 'package:rhyme/router/router.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const RhymeApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RhymeApp extends StatefulWidget {
+  const RhymeApp({super.key});
+
+  @override
+  State<RhymeApp> createState() => _RhymeAppState();
+}
+
+class _RhymeAppState extends State<RhymeApp> {
+  final _router = AppRouter();
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final primaryColor = const Color.fromARGB(255, 253, 44, 17);
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return MaterialApp.router(
+      title: 'Rhyme',
       theme: ThemeData(
         primaryColor: primaryColor,
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         scaffoldBackgroundColor: Colors.white70,
       ),
-      home: const HomeScreen(),
+      routerConfig: _router.config(),
     );
   }
 }
