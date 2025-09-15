@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:rhyme/ui/ui.dart';
 
 @RoutePage()
 class FavoriteScreen extends StatelessWidget {
@@ -7,6 +8,23 @@ class FavoriteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          const SliverAppBar(
+            snap: true,
+            floating: true,
+            title: Text('Избранное'),
+            elevation: 0,
+            surfaceTintColor: Colors.transparent,
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          SliverList.builder(
+            itemBuilder: (context, index) =>
+                const RhymeListCard(isFavorite: true),
+          ),
+        ],
+      ),
+    );
   }
 }
