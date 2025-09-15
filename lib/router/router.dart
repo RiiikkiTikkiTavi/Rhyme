@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:rhyme/features/favorites/favorites.dart';
 import 'package:rhyme/features/home/home.dart';
-import 'package:rhyme/features/poems/poems.dart';
+import 'package:rhyme/features/history/history.dart';
 import 'package:rhyme/features/search/search.dart';
 import 'package:rhyme/features/settings/settings.dart';
 
@@ -17,7 +17,7 @@ class AppRouter extends RootStackRouter {
       children: [
         AutoRoute(page: FavoriteRoute.page, path: 'favorites'),
         AutoRoute(page: SearchRoute.page, path: 'search'),
-        AutoRoute(page: PoemsRoute.page, path: 'poems'),
+        AutoRoute(page: HistoryRoute.page, path: 'poems'),
         AutoRoute(page: SettingsRoute.page, path: 'settings'),
       ],
     ),
