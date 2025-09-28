@@ -22,16 +22,23 @@ class RhymeHistoryCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          Wrap(
-            children: rhymes
-                .map(
-                  (e) => Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Text(e),
-                  ),
-                )
-                .toList(),
+          Flexible(
+            child: Text(
+              rhymes.map((e) => e + ', ').join(),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 4,
+            ),
           ),
+          // Wrap(
+          //   children: rhymes
+          //       .map(
+          //         (e) => Padding(
+          //           padding: const EdgeInsets.only(right: 4),
+          //           child: Text(e),
+          //         ),
+          //       )
+          //       .toList(),
+          // ),
         ],
       ),
     );
