@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rhyme/router/router.dart';
+import 'package:rhyme/ui/ui.dart';
 
 void main() {
   runApp(const RhymeApp());
@@ -18,14 +19,9 @@ class _RhymeAppState extends State<RhymeApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final primaryColor = const Color.fromARGB(255, 253, 44, 17);
     return MaterialApp.router(
       title: 'Rhyme',
-      theme: ThemeData(
-        primaryColor: primaryColor,
-        colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
-        scaffoldBackgroundColor: Colors.white70,
-      ),
+      theme: themeData,
       routerConfig: _router.config(),
     );
   }
