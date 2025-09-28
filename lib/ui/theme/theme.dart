@@ -7,4 +7,5 @@ final themeData = ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
   scaffoldBackgroundColor: Colors.white70,
   useMaterial3: true,
+  textTheme: const TextTheme(),
 );
