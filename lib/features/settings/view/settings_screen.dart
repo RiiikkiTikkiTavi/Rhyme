@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:rhyme/ui/ui.dart';
+import 'package:rhyme/features/settings/settings.dart';
+import 'package:rhyme/ui/widgets/base_container.dart';
 
 @RoutePage()
 class SettingsScreen extends StatelessWidget {
@@ -8,7 +9,6 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -19,17 +19,43 @@ class SettingsScreen extends StatelessWidget {
             elevation: 0,
             surfaceTintColor: Colors.transparent,
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          const SliverToBoxAdapter(child: SizedBox(height: 8)),
           SliverToBoxAdapter(
+            child: SettingsCard(
+              title: 'Темная тема',
+              value: true,
+              onChanged: (value) {},
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 8)),
+          SliverToBoxAdapter(
+            child: SettingsCard(
+              title: 'Уведомления',
+              value: true,
+              onChanged: (value) {},
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 8)),
+          SliverToBoxAdapter(
+            child: SettingsCard(
+              title: 'Разрешить аналитику',
+              value: true,
+              onChanged: (value) {},
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: BaseContainer(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 8,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.delete),
+                  title: Text('Очистить историю'),
+                  subtitle: Text(
+                    'История поиска хранится в кеше и его можно почистить',
+                  ),
                 ),
-                width: double.infinity,
-                child: Text('Темная тема', style: theme.textTheme.titleMedium),
               ),
             ),
           ),

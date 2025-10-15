@@ -4,12 +4,12 @@ class BaseContainer extends StatelessWidget {
   const BaseContainer({
     super.key,
     required this.child,
-    required this.width,
+    this.width,
     this.margin,
     this.padding = const EdgeInsets.only(left: 12),
   });
   final Widget child;
-  final double width;
+  final double? width;
   final EdgeInsets? margin;
   final EdgeInsets padding;
 
@@ -18,7 +18,7 @@ class BaseContainer extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: width, // double.infinity,
-      height: 40,
+      height: 50,
       margin: margin,
       padding: padding, //EdgeInsets.only(left: 12),
       decoration: BoxDecoration(

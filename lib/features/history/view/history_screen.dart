@@ -34,7 +34,16 @@ class HistoryScreen extends StatelessWidget {
                 int index,
               ) {
                 return const RhymeHistoryCard(
-                  rhymes: ['xdcfgyhu', 'tedryugh', 'xcfvgbhj', 'rtvygbhn'],
+                  rhymes: [
+                    'xdcfgyhu',
+                    'tedryugh',
+                    'rtvygbhn',
+                    'tfyguhhui',
+                    'xcfvgbhj',
+                    'rtvygbhn',
+                    'tfyguhhui',
+                    'ytgukhyhu',
+                  ],
                 );
               }, childCount: 20),
             ),
