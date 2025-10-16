@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:rhyme/ui/ui.dart';
 
 class RhymeListCard extends StatelessWidget {
-  const RhymeListCard({super.key, this.isFavorite = false});
+  const RhymeListCard({
+    super.key,
+    this.isFavorite = false,
+    required this.rhyme,
+    this.sourceWord,
+  });
 
   final bool isFavorite;
+  final String rhyme;
+  final String? sourceWord;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,27 @@ class RhymeListCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Рифма', style: theme.textTheme.bodyLarge),
+          Row(
+            children: [
+              if (sourceWord != null) ...[
+                Text(sourceWord!, style: theme.textTheme.bodyLarge),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 18,
+                    color: theme.hintColor.withAlpha(60),
+                  ),
+                ),
+              ],
+              Text(
+                rhyme,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
           IconButton(
             onPressed: () {},
             icon: Icon(
