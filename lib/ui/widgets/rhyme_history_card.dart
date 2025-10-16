@@ -11,7 +11,7 @@ class RhymeHistoryCard extends StatelessWidget {
     final theme = Theme.of(context);
     return BaseContainer(
       width: 200,
-      padding: const EdgeInsets.only(left: 16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min, //колонка расширается по мере контента
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,18 +27,13 @@ class RhymeHistoryCard extends StatelessWidget {
               rhymes.map((e) => e).join(', '),
               overflow: TextOverflow.ellipsis,
               maxLines: 4,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: 13,
+                color: theme.hintColor.withAlpha(60),
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-          // Wrap(
-          //   children: rhymes
-          //       .map(
-          //         (e) => Padding(
-          //           padding: const EdgeInsets.only(right: 4),
-          //           child: Text(e),
-          //         ),
-          //       )
-          //       .toList(),
-          // ),
         ],
       ),
     );

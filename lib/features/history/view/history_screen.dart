@@ -37,8 +37,8 @@ class HistoryScreen extends StatelessWidget {
                   rhymes: [
                     'xdcfgyhu',
                     'tedryugh',
-                    'rtvygbhn',
-                    'tfyguhhui',
+                    'rtvy',
+                    'tfhui',
                     'xcfvgbhj',
                     'rtvygbhn',
                     'tfyguhhui',
