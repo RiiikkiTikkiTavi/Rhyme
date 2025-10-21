@@ -52,12 +52,14 @@ class SearchRhymesBottomSheet extends StatelessWidget {
               ],
             ),
           ),
-          Divider(height: 1),
+          const Divider(height: 1),
           Expanded(
             child: ListView.separated(
-              itemBuilder: (context, index) =>
-                  ListTile(title: Text('слово из автокомплита'), onTap: () {}),
-              separatorBuilder: (context, _) => Divider(height: 1),
+              itemBuilder: (context, index) => ListTile(
+                title: const Text('слово из автокомплита'),
+                onTap: () {},
+              ),
+              separatorBuilder: (context, _) => const Divider(height: 1),
               itemCount: 15,
             ),
           ),
