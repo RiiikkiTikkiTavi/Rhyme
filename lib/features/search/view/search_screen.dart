@@ -9,44 +9,48 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          pinned: true, // закрепить appbar наверху
-          //snap: true, // только при floating: true, зафиксировать в поле зрения
-          floating: true, // сделать видимой при прокручивании вверх
-          title: const Text("Rhyme"),
-          //backgroundColor: theme.primaryColor,
-          elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(70),
-            child: SearchButton(onTap: () => _showSearchBottomSheet(context)),
-          ),
-        ),
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 16),
-        ), // передать другой виджет в сливер
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: 100,
-            child: ListView.separated(
-              padding: const EdgeInsets.only(left: 16),
-              scrollDirection: Axis.horizontal,
-              itemCount: 10,
-              separatorBuilder: (context, index) => const SizedBox(width: 16),
-              itemBuilder: (context, index) {
-                final rhymes = List.generate(4, (index) => 'Рифма $index');
-                return RhymeHistoryCard(rhymes: rhymes);
-              },
+    final theme = Theme.of(context);
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true, // закрепить appbar наверху
+            //snap: true, // только при floating: true, зафиксировать в поле зрения
+            floating: true, // сделать видимой при прокручивании вверх
+            backgroundColor: theme.cardColor,
+            title: const Text("Rhyme"),
+            elevation: 0,
+            surfaceTintColor: Colors.transparent,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(70),
+              child: SearchButton(onTap: () => _showSearchBottomSheet(context)),
             ),
           ),
-        ),
-        const SliverToBoxAdapter(child: SizedBox(height: 16)),
-        SliverList.builder(
-          itemBuilder: (context, index) => const RhymeListCard(rhyme: 'Рифма'),
-        ),
-      ],
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 16),
+          ), // передать другой виджет в сливер
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 100,
+              child: ListView.separated(
+                padding: const EdgeInsets.only(left: 16),
+                scrollDirection: Axis.horizontal,
+                itemCount: 10,
+                separatorBuilder: (context, index) => const SizedBox(width: 16),
+                itemBuilder: (context, index) {
+                  final rhymes = List.generate(4, (index) => 'Рифма $index');
+                  return RhymeHistoryCard(rhymes: rhymes);
+                },
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          SliverList.builder(
+            itemBuilder: (context, index) =>
+                const RhymeListCard(rhyme: 'Рифма'),
+          ),
+        ],
+      ),
     );
   }
 
