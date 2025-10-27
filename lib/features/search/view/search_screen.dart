@@ -1,11 +1,20 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
 import 'package:rhyme/features/search/search.dart';
 import 'package:rhyme/ui/ui.dart';
 
 @RoutePage()
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  final _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +32,10 @@ class SearchScreen extends StatelessWidget {
             surfaceTintColor: Colors.transparent,
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(70),
-              child: SearchButton(onTap: () => _showSearchBottomSheet(context)),
+              child: SearchButton(
+                onTap: () => _showSearchBottomSheet(context),
+                controller: _searchController,
+              ),
             ),
           ),
           const SliverToBoxAdapter(
@@ -45,21 +57,50 @@ class SearchScreen extends StatelessWidget {
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          SliverList.builder(
-            itemBuilder: (context, index) =>
-                const RhymeListCard(rhyme: 'Рифма'),
+          BlocBuilder<RhymesListBloc, RhymesListState>(
+            builder: (context, state) {
+              if (state is RhymesListLoaded) {
+                final rhymes = state.rhymes.words;
+                return SliverList.builder(
+                  itemCount: rhymes.length,
+                  itemBuilder: (context, index) =>
+                      RhymeListCard(rhyme: rhymes[index]),
+                );
+              }
+              if (state is RhymesListInitial) {
+                return const SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      'Начни искать рифмы',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                );
+              }
+              return const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator()),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  void _showSearchBottomSheet(BuildContext context) {
-    showModalBottomSheet(
+  Future<void> _showSearchBottomSheet(BuildContext context) async {
+    final bloc = BlocProvider.of<RhymesListBloc>(context);
+    final query = await showModalBottomSheet<String>(
       isScrollControlled: true, // логика скролла и размеры определяется ребенка
       backgroundColor: Colors.transparent,
       context: context,
-      builder: (context) => const SearchRhymesBottomSheet(),
+      builder: (context) =>
+          SearchRhymesBottomSheet(controller: _searchController),
     );
+    if (query?.isNotEmpty ?? false) {
+      bloc.add(SearchRhymes(query: query!));
+    }
   }
 }

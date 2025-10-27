@@ -10,8 +10,6 @@ abstract class RhymerApiClient {
   factory RhymerApiClient(Dio dio, {String? baseUrl}) = _RhymerApiClient;
 
   factory RhymerApiClient.create({String? apiUrl, String? apiKey}) {
-    // final apiURL = dotenv.env['API_URL'];
-    //final apiKey = dotenv.env['API_KEY'];
     final dio = Dio(
       BaseOptions(
         headers: {'x-api-key': apiKey},

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rhyme/api/api.dart';
+import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
 import 'package:rhyme/router/router.dart';
 import 'package:rhyme/ui/ui.dart';
 
@@ -25,16 +27,19 @@ class _RhymeAppState extends State<RhymeApp> {
   final _router = AppRouter();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Rhyme',
-      theme: themeData,
-      routerConfig: _router.config(),
+    return BlocProvider(
+      create: (context) => RhymesListBloc(
+        apiClient: RhymerApiClient.create(
+          apiUrl: dotenv.env['API_URL'],
+          apiKey: dotenv.env['API_KEY'],
+        ),
+      ),
+      child: MaterialApp.router(
+        title: 'Rhyme',
+        theme: themeData,
+        routerConfig: _router.config(),
+      ),
     );
   }
 }

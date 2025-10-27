@@ -1,8 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:rhyme/ui/ui.dart';
 
 class SearchRhymesBottomSheet extends StatelessWidget {
-  const SearchRhymesBottomSheet({super.key});
+  const SearchRhymesBottomSheet({super.key, required this.controller});
+
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +24,7 @@ class SearchRhymesBottomSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TextField(
+                      controller: controller,
                       decoration: InputDecoration(
                         hintText: 'Начни вводить слово...',
                         hintStyle: TextStyle(
@@ -40,14 +44,17 @@ class SearchRhymesBottomSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Container(
-                  height: 44,
-                  width: 44,
-                  decoration: BoxDecoration(
-                    color: theme.primaryColor,
-                    borderRadius: BorderRadius.circular(12),
+                GestureDetector(
+                  onTap: () => _onTapSearch(context),
+                  child: Container(
+                    height: 44,
+                    width: 44,
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.search, color: Colors.white),
                   ),
-                  child: const Icon(Icons.search, color: Colors.white),
                 ),
               ],
             ),
@@ -66,5 +73,10 @@ class SearchRhymesBottomSheet extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _onTapSearch(BuildContext context) {
+    // закрытие страницы и передача аргумента - текста
+    Navigator.of(context).pop(controller.text);
   }
 }
