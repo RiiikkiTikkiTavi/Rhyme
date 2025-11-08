@@ -15,3 +15,18 @@ class SearchRhymes extends RhymesListEvent {
   @override
   List<Object> get props => super.props..addAll([query]);
 }
+
+class ToggleFavoriteRhymes extends RhymesListEvent {
+  final Rhymes rhymes;
+  final String query;
+  final String favoriteWord;
+
+  const ToggleFavoriteRhymes({
+    required this.rhymes,
+    required this.query,
+    required this.favoriteWord,
+  });
+
+  @override
+  List<Object> get props => super.props..addAll([rhymes, query, favoriteWord]);
+}

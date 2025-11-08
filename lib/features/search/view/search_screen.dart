@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rhyme/api/models/rhymes.dart';
 import 'package:rhyme/features/history/history.dart';
 import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
 import 'package:rhyme/features/search/search.dart';
@@ -75,11 +76,24 @@ class _SearchScreenState extends State<SearchScreen> {
             },
             builder: (context, state) {
               if (state is RhymesListLoaded) {
-                final rhymes = state.rhymes.words;
+                final rhymesModel = state.rhymes;
+                final rhymes = rhymesModel.words;
                 return SliverList.builder(
                   itemCount: rhymes.length,
-                  itemBuilder: (context, index) =>
-                      RhymeListCard(rhyme: rhymes[index]),
+                  itemBuilder: (context, index) {
+                    final currentRhyme = rhymes[index];
+                    return RhymeListCard(
+                      rhyme: currentRhyme,
+                      onTap: () {
+                        _toggleFavorite(
+                          context,
+                          rhymesModel,
+                          state,
+                          currentRhyme,
+                        );
+                      },
+                    );
+                  },
                 );
               }
               if (state is RhymesListInitial) {
@@ -101,6 +115,21 @@ class _SearchScreenState extends State<SearchScreen> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  void _toggleFavorite(
+    BuildContext context,
+    Rhymes rhymesModel,
+    RhymesListLoaded state,
+    String currentRhyme,
+  ) {
+    BlocProvider.of<RhymesListBloc>(context).add(
+      ToggleFavoriteRhymes(
+        rhymes: rhymesModel,
+        query: state.query,
+        favoriteWord: currentRhyme,
       ),
     );
   }

@@ -13,10 +13,11 @@ final class RhymesListLoading extends RhymesListState {}
 
 final class RhymesListLoaded extends RhymesListState {
   final Rhymes rhymes;
+  final String query;
 
-  const RhymesListLoaded(this.rhymes);
+  const RhymesListLoaded({required this.rhymes, required this.query});
   @override
-  List<Object> get props => super.props..add(rhymes);
+  List<Object> get props => super.props..addAll([rhymes, query]);
 }
 
 final class RhymesListFailure extends RhymesListState {

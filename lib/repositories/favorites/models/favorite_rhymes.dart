@@ -6,7 +6,7 @@ part 'favorite_rhymes.g.dart';
 @HiveType(typeId: 1)
 class FavoriteRhymes extends HiveObject {
   @HiveField(0)
-  final int id;
+  final String id;
   @HiveField(1)
   final String queryWord;
   @HiveField(2)

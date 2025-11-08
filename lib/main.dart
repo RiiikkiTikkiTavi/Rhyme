@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,17 +16,24 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   await Hive.initFlutter(); // инициализация
   Hive.registerAdapter(HistoryRhymesAdapter());
+  Hive.registerAdapter(FavoriteRhymesAdapter());
   String historyRhymesBoxName = 'history_rhymes';
   String favoriteRhymesBoxName = 'favorite_rhymes';
+  await Hive.deleteBoxFromDisk('history_rhymes');
   final historyBox = await Hive.openBox<HistoryRhymes>(historyRhymesBoxName);
   final favoriteBox = await Hive.openBox<FavoriteRhymes>(favoriteRhymesBoxName);
-  runApp(RhymeApp(historyBox: historyBox));
+  runApp(RhymeApp(historyBox: historyBox, favoriteBox: favoriteBox));
 }
 
 class RhymeApp extends StatefulWidget {
-  const RhymeApp({super.key, required this.historyBox});
+  const RhymeApp({
+    super.key,
+    required this.historyBox,
+    required this.favoriteBox,
+  });
 
   final Box<HistoryRhymes> historyBox;
+  final Box<FavoriteRhymes> favoriteBox;
 
   @override
   State<RhymeApp> createState() => _RhymeAppState();
@@ -37,6 +45,9 @@ class _RhymeAppState extends State<RhymeApp> {
   @override
   Widget build(BuildContext context) {
     final historyRepository = HistoryRepository(rhymesBox: widget.historyBox);
+    final favoriteRepository = FavoritesRepository(
+      rhymesBox: widget.favoriteBox,
+    );
 
     return MultiBlocProvider(
       providers: [
@@ -47,6 +58,7 @@ class _RhymeAppState extends State<RhymeApp> {
               apiKey: dotenv.env['API_KEY'],
             ),
             historyRepository: historyRepository,
+            favoriteRepository: favoriteRepository,
           ),
         ),
         BlocProvider(

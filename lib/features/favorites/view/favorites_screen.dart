@@ -20,10 +20,11 @@ class FavoriteScreen extends StatelessWidget {
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
           SliverList.builder(
-            itemBuilder: (context, index) => const RhymeListCard(
+            itemBuilder: (context, index) => RhymeListCard(
               isFavorite: true,
               rhyme: 'Рифма',
               sourceWord: 'Слово',
+              onTap: () {},
             ),
           ),
         ],
