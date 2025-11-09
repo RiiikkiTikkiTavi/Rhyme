@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'rhymes_list_bloc.dart';
 
 sealed class RhymesListState extends Equatable {
@@ -31,6 +32,18 @@ final class RhymesListLoaded extends RhymesListState {
   @override
   List<Object> get props =>
       super.props..addAll([rhymes, query, _favoriteRhymes]);
+
+  RhymesListLoaded copyWith({
+    Rhymes? rhymes,
+    String? query,
+    List<FavoriteRhymes>? favoriteRhymes,
+  }) {
+    return RhymesListLoaded(
+      rhymes: rhymes ?? this.rhymes,
+      query: query ?? this.query,
+      favoriteRhymes: favoriteRhymes ?? _favoriteRhymes,
+    );
+  }
 }
 
 final class RhymesListFailure extends RhymesListState {

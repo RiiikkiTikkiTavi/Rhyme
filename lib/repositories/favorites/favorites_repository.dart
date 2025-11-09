@@ -19,6 +19,7 @@ class FavoritesRepository implements FavoritesRepositoryInterface {
       for (var e in rhymesList) {
         await e.delete();
       }
+      return;
     }
     await rhymesBox.add(rhymes);
   }

@@ -48,9 +48,14 @@ class RhymesListBloc extends Bloc<RhymesListEvent, RhymesListState> {
     Emitter<RhymesListState> emit,
   ) async {
     try {
+      final prevState = state;
+      if (prevState is! RhymesListLoaded) return;
+
       await _favoriteRepository.createOrDeleteRhymes(
         event.rhymes.toFavorite(event.query, event.favoriteWord),
       );
+      final favoriteRhymes = await _favoriteRepository.getRhymesList();
+      emit(prevState.copyWith(favoriteRhymes: favoriteRhymes));
     } catch (e) {
       emit(RhymesListFailure(e));
     }
