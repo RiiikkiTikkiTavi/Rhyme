@@ -19,6 +19,12 @@ class _SearchScreenState extends State<SearchScreen> {
   final _searchController = TextEditingController();
 
   @override
+  void initState() {
+    BlocProvider.of<HistoryRhymesBloc>(context).add(LoadHistoryRhymes());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
@@ -47,7 +53,6 @@ class _SearchScreenState extends State<SearchScreen> {
             child: BlocBuilder<HistoryRhymesBloc, HistoryRhymesState>(
               builder: (context, state) {
                 if (state is! HistoryRhymesLoaded) return const SizedBox();
-
                 return SizedBox(
                   height: 100,
                   child: ListView.separated(
@@ -58,7 +63,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(width: 16),
                     itemBuilder: (context, index) {
                       final rhymes = state.rhymes[index];
-
                       return RhymeHistoryCard(
                         rhymes: rhymes.words,
                         word: rhymes.word,
@@ -84,6 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     final currentRhyme = rhymes[index];
                     return RhymeListCard(
                       rhyme: currentRhyme,
+                      isFavorite: state.isFavorite(currentRhyme),
                       onTap: () {
                         _toggleFavorite(
                           context,

@@ -29,8 +29,15 @@ class RhymesListBloc extends Bloc<RhymesListEvent, RhymesListState> {
       emit(RhymesListLoading());
       final rhymes = await _apiClient.getRhymesList(event.query);
       final historyRhymes = rhymes.toHistory(event.query);
-      _historyRepository.setRhymes(historyRhymes);
-      emit(RhymesListLoaded(rhymes: rhymes, query: event.query));
+      await _historyRepository.setRhymes(historyRhymes);
+      final favoriteRhymes = await _favoriteRepository.getRhymesList();
+      emit(
+        RhymesListLoaded(
+          rhymes: rhymes,
+          query: event.query,
+          favoriteRhymes: favoriteRhymes,
+        ),
+      );
     } catch (e) {
       emit(RhymesListFailure(e));
     }
