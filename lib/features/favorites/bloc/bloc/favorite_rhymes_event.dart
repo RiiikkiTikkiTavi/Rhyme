@@ -8,12 +8,3 @@ sealed class FavoriteRhymesEvent extends Equatable {
 }
 
 final class LoadFavoriteRhymes extends FavoriteRhymesEvent {}
-
-class SearchRhymes extends FavoriteRhymesEvent {
-  final String query;
-
-  const SearchRhymes({required this.query});
-
-  @override
-  List<Object> get props => super.props..addAll([query]);
-}

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rhyme/api/api.dart';
@@ -58,6 +60,8 @@ class RhymesListBloc extends Bloc<RhymesListEvent, RhymesListState> {
       emit(prevState.copyWith(favoriteRhymes: favoriteRhymes));
     } catch (e) {
       emit(RhymesListFailure(e));
+    } finally {
+      event.completer?.complete();
     }
   }
 

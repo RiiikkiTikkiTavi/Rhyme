@@ -5,7 +5,7 @@ sealed class RhymesListEvent extends Equatable {
   const RhymesListEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class SearchRhymes extends RhymesListEvent {
@@ -13,20 +13,23 @@ class SearchRhymes extends RhymesListEvent {
   const SearchRhymes({required this.query});
 
   @override
-  List<Object> get props => super.props..addAll([query]);
+  List<Object?> get props => super.props..addAll([query]);
 }
 
 class ToggleFavoriteRhymes extends RhymesListEvent {
   final Rhymes rhymes;
   final String query;
   final String favoriteWord;
+  final Completer? completer;
 
   const ToggleFavoriteRhymes({
     required this.rhymes,
     required this.query,
     required this.favoriteWord,
+    this.completer,
   });
 
   @override
-  List<Object> get props => super.props..addAll([rhymes, query, favoriteWord]);
+  List<Object?> get props =>
+      super.props..addAll([rhymes, query, favoriteWord, completer]);
 }

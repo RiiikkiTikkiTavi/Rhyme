@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rhyme/api/models/rhymes.dart';
+import 'package:rhyme/features/favorites/bloc/bloc/favorite_rhymes_bloc.dart';
 import 'package:rhyme/features/history/history.dart';
 import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
 import 'package:rhyme/features/search/search.dart';
@@ -124,19 +127,26 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  void _toggleFavorite(
+  Future<void> _toggleFavorite(
     BuildContext context,
     Rhymes rhymesModel,
     RhymesListLoaded state,
     String currentRhyme,
-  ) {
-    BlocProvider.of<RhymesListBloc>(context).add(
+  ) async {
+    final rhymesListBloc = BlocProvider.of<RhymesListBloc>(context);
+    final favoriteRhymesBloc = BlocProvider.of<FavoriteRhymesBloc>(context);
+    final completer = Completer();
+    rhymesListBloc.add(
       ToggleFavoriteRhymes(
         rhymes: rhymesModel,
         query: state.query,
         favoriteWord: currentRhyme,
+        completer: completer,
       ),
     );
+    await completer
+        .future; // ждет, когда внутри блок вызовется завершение complete
+    favoriteRhymesBloc.add(LoadFavoriteRhymes());
   }
 
   void _handlRhymesListState(RhymesListState state, BuildContext context) {
@@ -146,7 +156,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _showSearchBottomSheet(BuildContext context) async {
-    final bloc = BlocProvider.of<RhymesListBloc>(context);
+    final rhymesListBloc = BlocProvider.of<RhymesListBloc>(context);
     final query = await showModalBottomSheet<String>(
       isScrollControlled: true, // логика скролла и размеры определяется ребенка
       backgroundColor: Colors.transparent,
@@ -155,7 +165,7 @@ class _SearchScreenState extends State<SearchScreen> {
           SearchRhymesBottomSheet(controller: _searchController),
     );
     if (query?.isNotEmpty ?? false) {
-      bloc.add(SearchRhymes(query: query!));
+      rhymesListBloc.add(SearchRhymes(query: query!));
     }
   }
 }
