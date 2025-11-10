@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:rhyme/api/api.dart';
+import 'package:rhyme/bloc/theme/theme_cubit.dart';
 import 'package:rhyme/features/favorites/bloc/bloc/favorite_rhymes_bloc.dart';
 import 'package:rhyme/features/history/bloc/bloc/history_rhymes_bloc.dart';
 import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
@@ -70,11 +71,16 @@ class _RhymeAppState extends State<RhymeApp> {
           create: (context) =>
               FavoriteRhymesBloc(favoritesRepository: favoriteRepository),
         ),
+        BlocProvider(create: (context) => ThemeCubit()),
       ],
-      child: MaterialApp.router(
-        title: 'Rhyme',
-        theme: darkTheme,
-        routerConfig: _router.config(),
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            title: 'Rhyme',
+            theme: state.isDark ? darkTheme : lightTheme,
+            routerConfig: _router.config(),
+          );
+        },
       ),
     );
   }
