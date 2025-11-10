@@ -73,7 +73,7 @@ class _RhymeAppState extends State<RhymeApp> {
       ],
       child: MaterialApp.router(
         title: 'Rhyme',
-        theme: themeData,
+        theme: darkTheme,
         routerConfig: _router.config(),
       ),
     );
