@@ -12,6 +12,7 @@ import 'package:rhyme/repositories/favorites/favorites.dart';
 import 'package:rhyme/repositories/history/history.dart';
 import 'package:rhyme/router/router.dart';
 import 'package:rhyme/ui/ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,14 @@ Future<void> main() async {
   //await Hive.deleteBoxFromDisk('history_rhymes');
   final historyBox = await Hive.openBox<HistoryRhymes>(historyRhymesBoxName);
   final favoriteBox = await Hive.openBox<FavoriteRhymes>(favoriteRhymesBoxName);
-  runApp(RhymeApp(historyBox: historyBox, favoriteBox: favoriteBox));
+  final prefs = await SharedPreferences.getInstance();
+  runApp(
+    RhymeApp(
+      historyBox: historyBox,
+      favoriteBox: favoriteBox,
+      preferences: prefs,
+    ),
+  );
 }
 
 class RhymeApp extends StatefulWidget {
@@ -32,10 +40,12 @@ class RhymeApp extends StatefulWidget {
     super.key,
     required this.historyBox,
     required this.favoriteBox,
+    required this.preferences,
   });
 
   final Box<HistoryRhymes> historyBox;
   final Box<FavoriteRhymes> favoriteBox;
+  final SharedPreferences preferences;
 
   @override
   State<RhymeApp> createState() => _RhymeAppState();
