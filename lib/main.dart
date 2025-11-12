@@ -10,6 +10,7 @@ import 'package:rhyme/features/history/bloc/bloc/history_rhymes_bloc.dart';
 import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
 import 'package:rhyme/repositories/favorites/favorites.dart';
 import 'package:rhyme/repositories/history/history.dart';
+import 'package:rhyme/repositories/settings/settings.dart';
 import 'package:rhyme/router/router.dart';
 import 'package:rhyme/ui/ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,6 +61,9 @@ class _RhymeAppState extends State<RhymeApp> {
     final favoriteRepository = FavoritesRepository(
       rhymesBox: widget.favoriteBox,
     );
+    final settingsRepository = SettingsRepository(
+      preferences: widget.preferences,
+    );
 
     return MultiBlocProvider(
       providers: [
@@ -81,7 +85,10 @@ class _RhymeAppState extends State<RhymeApp> {
           create: (context) =>
               FavoriteRhymesBloc(favoritesRepository: favoriteRepository),
         ),
-        BlocProvider(create: (context) => ThemeCubit()),
+        BlocProvider(
+          create: (context) =>
+              ThemeCubit(settingsRepository: settingsRepository),
+        ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
