@@ -32,4 +32,5 @@ final _textTheme = const TextTheme(
 
 extension ThemePlatformExtension on ThemeData {
   bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
+  Color get cupertinoAlertColor => const Color.fromARGB(255, 253, 44, 17);
 }

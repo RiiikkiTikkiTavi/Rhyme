@@ -1,9 +1,10 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rhyme/bloc/theme/theme_cubit.dart';
-import 'package:rhyme/features/history/history.dart';
 import 'package:rhyme/features/settings/settings.dart';
+import 'package:rhyme/ui/theme/theme.dart';
 import 'package:rhyme/ui/widgets/base_container.dart';
 
 @RoutePage()
@@ -77,7 +78,87 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _clearHistory(BuildContext context) {
-    BlocProvider.of<HistoryRhymesBloc>(context).add(ClearRhymesHistory());
+    final theme = Theme.of(context);
+    if (theme.isAndroid) {
+      showDialog(
+        context: context,
+        builder: (context) => const ConfirmationDialog(),
+      );
+      return;
+    }
+    showCupertinoDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => CupertinoAlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Вы уверны?', style: theme.textTheme.headlineSmall),
+            Text(
+              'Данные будут удалены навсегда',
+              style: theme.textTheme.bodyMedium?.copyWith(fontSize: 16),
+            ),
+          ],
+        ),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(context).pop(),
+            isDestructiveAction: true,
+            child: Text(
+              'Да',
+              style: TextStyle(color: theme.cupertinoAlertColor),
+            ),
+          ),
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(context).pop(),
+            isDefaultAction: true,
+            child: const Text(
+              'Нет',
+              style: TextStyle(color: Color(0xFF3478F7)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    //BlocProvider.of<HistoryRhymesBloc>(context).add(ClearRhymesHistory());
+  }
+}
+
+class ConfirmationDialog extends StatelessWidget {
+  const ConfirmationDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Вы уверны?', style: theme.textTheme.headlineSmall),
+          Text(
+            'Данные будут удалены навсегда',
+            style: theme.textTheme.bodyMedium?.copyWith(fontSize: 16),
+          ),
+        ],
+      ),
+      backgroundColor: theme.cardColor,
+      surfaceTintColor: theme.cardColor,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Да', style: TextStyle(color: theme.hintColor)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Нет'),
+        ),
+      ],
+    );
   }
 }
 
