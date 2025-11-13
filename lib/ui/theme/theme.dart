@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 final _primaryColor = const Color.fromARGB(255, 253, 44, 17);
@@ -28,3 +29,7 @@ final lightTheme = ThemeData(
 final _textTheme = const TextTheme(
   titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
 );
+
+extension ThemePlatformExtension on ThemeData {
+  bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
+}
