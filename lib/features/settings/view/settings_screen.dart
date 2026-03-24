@@ -66,11 +66,28 @@ class SettingsScreen extends StatelessWidget {
             child: SettingsActionCard(
               title: 'Поддержка',
               iconData: Icons.message_outlined,
-              onTap: () {},
+              onTap: () {
+                _openSupport(context);
+              },
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _openSupport(BuildContext context) {
+    final theme = Theme.of(context);
+    if (theme.isAndroid) {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => const SupportBottomSheet(),
+      );
+      return;
+    }
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => const SupportBottomSheet(),
     );
   }
 
@@ -85,25 +102,122 @@ class SettingsScreen extends StatelessWidget {
     if (theme.isAndroid) {
       showDialog(
         context: context,
-        builder: (context) => ConfirmationDialog(onConfirm: () {_clearHistory(context);},),
+        builder: (context) => ConfirmationDialog(
+          onConfirm: () {
+            _clearHistory(context);
+          },
+        ),
       );
       return;
     }
     showCupertinoDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => ConfirmationDialog(onConfirm: () {_clearHistory(context);},) 
+      builder: (context) => ConfirmationDialog(
+        onConfirm: () {
+          _clearHistory(context);
+        },
+      ),
     );
 
     //BlocProvider.of<HistoryRhymesBloc>(context).add(ClearRhymesHistory());
   }
 
-  void _clearHistory(BuildContext context) => BlocProvider.of<HistoryRhymesBloc>(context).add(ClearRhymesHistory());
+  void _clearHistory(BuildContext context) =>
+      BlocProvider.of<HistoryRhymesBloc>(context).add(ClearRhymesHistory());
+}
+
+class SupportBottomSheet extends StatelessWidget {
+  const SupportBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (theme.isAndroid) {
+      return Padding(
+        padding: const EdgeInsets.all(24).copyWith(top: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Поддержка',
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    _close(context);
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                label: const Text('Написать в Telegram'),
+                icon: const Icon(Icons.telegram),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {},
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.email),
+                label: const Text('Отправить письмо'),
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return CupertinoActionSheet(
+      title: const Text('Поддержка'),
+      message: const Text('Ответим вам быстро'),
+      actions: <CupertinoActionSheetAction>[
+        CupertinoActionSheetAction(
+          child: Text(
+            'Написать в Telegram',
+            style: TextStyle(color: theme.cupertinoActionColor),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        CupertinoActionSheetAction(
+          child: Text(
+            'Отправить письмо',
+            style: TextStyle(color: theme.cupertinoActionColor),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _close(BuildContext context) {
+    Navigator.of(context).pop();
+  }
 }
 
 class ConfirmationDialog extends StatelessWidget {
-  const ConfirmationDialog({super.key,
-  required this.onConfirm});
+  const ConfirmationDialog({super.key, required this.onConfirm});
 
   final VoidCallback onConfirm;
 
@@ -111,63 +225,60 @@ class ConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     if (theme.isAndroid) {
-    return AlertDialog(
-      content: const _DialogContent(crossAxisAlignment: CrossAxisAlignment.start,),
-      backgroundColor: theme.cardColor,
-      surfaceTintColor: theme.cardColor,
-      actions: [
-        TextButton(
-          onPressed: () {
-            _confirm(context);
-          },
-          child: Text('Да', style: TextStyle(color: theme.hintColor)),
+      return AlertDialog(
+        content: const _DialogContent(
+          crossAxisAlignment: CrossAxisAlignment.start,
         ),
-        TextButton(
+        backgroundColor: theme.cardColor,
+        surfaceTintColor: theme.cardColor,
+        actions: [
+          TextButton(
+            onPressed: () {
+              _confirm(context);
+            },
+            child: Text('Да', style: TextStyle(color: theme.hintColor)),
+          ),
+          TextButton(
+            onPressed: () => _close(context),
+            child: const Text('Нет'),
+          ),
+        ],
+      );
+    }
+    return CupertinoAlertDialog(
+      content: const _DialogContent(
+        crossAxisAlignment: CrossAxisAlignment.center,
+      ),
+      actions: [
+        CupertinoDialogAction(
+          onPressed: () => _confirm(context),
+          isDestructiveAction: true,
+          child: Text('Да', style: TextStyle(color: theme.cupertinoAlertColor)),
+        ),
+        CupertinoDialogAction(
           onPressed: () => _close(context),
-          child: const Text('Нет'),
+          isDefaultAction: true,
+          child: Text(
+            'Нет',
+            style: TextStyle(color: theme.cupertinoActionColor),
+          ),
         ),
       ],
     );
   }
-  return CupertinoAlertDialog(
-        content: const _DialogContent(crossAxisAlignment: CrossAxisAlignment.center,),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () =>_confirm(context),
-            isDestructiveAction: true,
-            child: Text(
-              'Да',
-              style: TextStyle(color: theme.cupertinoAlertColor),
-            ),
-          ),
-          CupertinoDialogAction(
-            onPressed: () => _close(context),
-            isDefaultAction: true,
-            child: const Text(
-              'Нет',
-              style: TextStyle(color: Color(0xFF3478F7)),
-            ),
-          ),
-        ],
-      );
+
+  void _close(BuildContext context) {
+    Navigator.of(context).pop();
   }
 
-  void _close(BuildContext context){
-   Navigator.of(context).pop(); 
-  }
-
-  void _confirm(BuildContext context){
+  void _confirm(BuildContext context) {
     onConfirm.call();
-    Navigator.of(context).pop(); 
+    Navigator.of(context).pop();
   }
-
-
 }
 
 class _DialogContent extends StatelessWidget {
-  const _DialogContent({
-    required this.crossAxisAlignment,
-  });
+  const _DialogContent({required this.crossAxisAlignment});
 
   final CrossAxisAlignment crossAxisAlignment;
 
