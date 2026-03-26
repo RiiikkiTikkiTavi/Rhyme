@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,6 +9,7 @@ import 'package:rhyme/bloc/theme/theme_cubit.dart';
 import 'package:rhyme/features/favorites/bloc/bloc/favorite_rhymes_bloc.dart';
 import 'package:rhyme/features/history/bloc/bloc/history_rhymes_bloc.dart';
 import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
+import 'package:rhyme/firebase_options.dart';
 import 'package:rhyme/repositories/favorites/favorites.dart';
 import 'package:rhyme/repositories/history/history.dart';
 import 'package:rhyme/repositories/settings/settings.dart';
@@ -27,6 +29,7 @@ Future<void> main() async {
   final historyBox = await Hive.openBox<HistoryRhymes>(historyRhymesBoxName);
   final favoriteBox = await Hive.openBox<FavoriteRhymes>(favoriteRhymesBoxName);
   final prefs = await SharedPreferences.getInstance();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     RhymeApp(
       historyBox: historyBox,
