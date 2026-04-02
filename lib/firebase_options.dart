@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'rhyme-b2804.firebasestorage.app',
     measurementId: 'G-6L8QZC0T1V',
   );
+
 }

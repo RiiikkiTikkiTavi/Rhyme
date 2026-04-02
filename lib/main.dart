@@ -1,8 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:rhyme/api/api.dart';
 import 'package:rhyme/bloc/theme/theme_cubit.dart';
@@ -29,7 +33,49 @@ Future<void> main() async {
   final historyBox = await Hive.openBox<HistoryRhymes>(historyRhymesBoxName);
   final favoriteBox = await Hive.openBox<FavoriteRhymes>(favoriteRhymesBoxName);
   final prefs = await SharedPreferences.getInstance();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final app = await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  log('Firebase initialized: ${app.name}');
+  final messaging = FirebaseMessaging.instance;
+  await messaging.requestPermission();
+  messaging.getToken().then((token) => log(token ?? 'Нет токена'));
+
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    description:
+        'This channel is used for important notifications.', // description
+    importance: Importance.max,
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.createNotificationChannel(channel);
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    final notification = message.notification;
+    final android = message.notification?.android;
+
+    if (notification != null && android != null) {
+      flutterLocalNotificationsPlugin.show(
+        id: notification.hashCode,
+        title: notification.title,
+        body: notification.body,
+        notificationDetails: NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channelDescription: channel.description,
+            icon: 'ic_launcher',
+          ),
+        ),
+      );
+    }
+  });
   runApp(
     RhymeApp(
       historyBox: historyBox,
