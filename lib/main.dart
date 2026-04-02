@@ -76,26 +76,15 @@ Future<void> main() async {
       );
     }
   });
-  runApp(
-    RhymeApp(
-      historyBox: historyBox,
-      favoriteBox: favoriteBox,
-      preferences: prefs,
-    ),
-  );
+
+  final config = AppConfig(historyBox, favoriteBox, prefs);
+  runApp(RhymeApp(config: config));
 }
 
 class RhymeApp extends StatefulWidget {
-  const RhymeApp({
-    super.key,
-    required this.historyBox,
-    required this.favoriteBox,
-    required this.preferences,
-  });
+  const RhymeApp({super.key, required this.config});
 
-  final Box<HistoryRhymes> historyBox;
-  final Box<FavoriteRhymes> favoriteBox;
-  final SharedPreferences preferences;
+  final AppConfig config;
 
   @override
   State<RhymeApp> createState() => _RhymeAppState();
@@ -106,39 +95,8 @@ class _RhymeAppState extends State<RhymeApp> {
 
   @override
   Widget build(BuildContext context) {
-    final historyRepository = HistoryRepository(rhymesBox: widget.historyBox);
-    final favoriteRepository = FavoritesRepository(
-      rhymesBox: widget.favoriteBox,
-    );
-    final settingsRepository = SettingsRepository(
-      preferences: widget.preferences,
-    );
-
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => RhymesListBloc(
-            apiClient: RhymerApiClient.create(
-              apiUrl: dotenv.env['API_URL'],
-              apiKey: dotenv.env['API_KEY'],
-            ),
-            historyRepository: historyRepository,
-            favoriteRepository: favoriteRepository,
-          ),
-        ),
-        BlocProvider(
-          create: (context) =>
-              HistoryRhymesBloc(historyRepository: historyRepository),
-        ),
-        BlocProvider(
-          create: (context) =>
-              FavoriteRhymesBloc(favoritesRepository: favoriteRepository),
-        ),
-        BlocProvider(
-          create: (context) =>
-              ThemeCubit(settingsRepository: settingsRepository),
-        ),
-      ],
+    return AppInitializer(
+      config: widget.config,
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
           return MaterialApp.router(
@@ -150,4 +108,68 @@ class _RhymeAppState extends State<RhymeApp> {
       ),
     );
   }
+}
+
+class AppInitializer extends StatelessWidget {
+  const AppInitializer({super.key, required this.child, required this.config});
+
+  final AppConfig config;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<HistoryRepositoryInterface>(
+          create: (context) => HistoryRepository(rhymesBox: config.historyBox),
+        ),
+        RepositoryProvider<FavoritesRepositoryInterface>(
+          create: (context) =>
+              FavoritesRepository(rhymesBox: config.favoriteBox),
+        ),
+        RepositoryProvider<SettingsRepositoryInterface>(
+          create: (context) =>
+              SettingsRepository(preferences: config.preferences),
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => RhymesListBloc(
+              apiClient: RhymerApiClient.create(
+                apiUrl: dotenv.env['API_URL'],
+                apiKey: dotenv.env['API_KEY'],
+              ),
+              historyRepository: context.read<HistoryRepositoryInterface>(),
+              favoriteRepository: context.read<FavoritesRepositoryInterface>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => HistoryRhymesBloc(
+              historyRepository: context.read<HistoryRepositoryInterface>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => FavoriteRhymesBloc(
+              favoritesRepository: context.read<FavoritesRepositoryInterface>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ThemeCubit(
+              settingsRepository: context.read<SettingsRepositoryInterface>(),
+            ),
+          ),
+        ],
+        child: child,
+      ),
+    );
+  }
+}
+
+class AppConfig {
+  final Box<HistoryRhymes> historyBox;
+  final Box<FavoriteRhymes> favoriteBox;
+  final SharedPreferences preferences;
+
+  AppConfig(this.historyBox, this.favoriteBox, this.preferences);
 }
