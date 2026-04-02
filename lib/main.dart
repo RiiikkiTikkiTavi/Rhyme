@@ -4,43 +4,44 @@ import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-import 'package:rhyme/api/api.dart';
-import 'package:rhyme/bloc/theme/theme_cubit.dart';
-import 'package:rhyme/features/favorites/bloc/bloc/favorite_rhymes_bloc.dart';
-import 'package:rhyme/features/history/bloc/bloc/history_rhymes_bloc.dart';
-import 'package:rhyme/features/search/bloc/rhymes_list_bloc.dart';
+import 'package:rhyme/app/app.dart';
 import 'package:rhyme/firebase_options.dart';
 import 'package:rhyme/repositories/favorites/favorites.dart';
 import 'package:rhyme/repositories/history/history.dart';
-import 'package:rhyme/repositories/settings/settings.dart';
-import 'package:rhyme/router/router.dart';
-import 'package:rhyme/ui/ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
   await Hive.initFlutter(); // инициализация
   Hive.registerAdapter(HistoryRhymesAdapter());
   Hive.registerAdapter(FavoriteRhymesAdapter());
+
   String historyRhymesBoxName = 'history_rhymes';
   String favoriteRhymesBoxName = 'favorite_rhymes';
   //await Hive.deleteBoxFromDisk('history_rhymes');
   final historyBox = await Hive.openBox<HistoryRhymes>(historyRhymesBoxName);
   final favoriteBox = await Hive.openBox<FavoriteRhymes>(favoriteRhymesBoxName);
-  final prefs = await SharedPreferences.getInstance();
-  final app = await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  log('Firebase initialized: ${app.name}');
+
+  final prefs = await _initPrefs();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   final messaging = FirebaseMessaging.instance;
   await messaging.requestPermission();
   messaging.getToken().then((token) => log(token ?? 'Нет токена'));
 
+  await _initNotification();
+
+  final config = AppConfig(historyBox, favoriteBox, prefs);
+  runApp(RhymeApp(config: config));
+}
+
+Future<void> _initNotification() async {
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
@@ -76,100 +77,9 @@ Future<void> main() async {
       );
     }
   });
-
-  final config = AppConfig(historyBox, favoriteBox, prefs);
-  runApp(RhymeApp(config: config));
 }
 
-class RhymeApp extends StatefulWidget {
-  const RhymeApp({super.key, required this.config});
-
-  final AppConfig config;
-
-  @override
-  State<RhymeApp> createState() => _RhymeAppState();
-}
-
-class _RhymeAppState extends State<RhymeApp> {
-  final _router = AppRouter();
-
-  @override
-  Widget build(BuildContext context) {
-    return AppInitializer(
-      config: widget.config,
-      child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (context, state) {
-          return MaterialApp.router(
-            title: 'Rhyme',
-            theme: state.isDark ? darkTheme : lightTheme,
-            routerConfig: _router.config(),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class AppInitializer extends StatelessWidget {
-  const AppInitializer({super.key, required this.child, required this.config});
-
-  final AppConfig config;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider<HistoryRepositoryInterface>(
-          create: (context) => HistoryRepository(rhymesBox: config.historyBox),
-        ),
-        RepositoryProvider<FavoritesRepositoryInterface>(
-          create: (context) =>
-              FavoritesRepository(rhymesBox: config.favoriteBox),
-        ),
-        RepositoryProvider<SettingsRepositoryInterface>(
-          create: (context) =>
-              SettingsRepository(preferences: config.preferences),
-        ),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => RhymesListBloc(
-              apiClient: RhymerApiClient.create(
-                apiUrl: dotenv.env['API_URL'],
-                apiKey: dotenv.env['API_KEY'],
-              ),
-              historyRepository: context.read<HistoryRepositoryInterface>(),
-              favoriteRepository: context.read<FavoritesRepositoryInterface>(),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => HistoryRhymesBloc(
-              historyRepository: context.read<HistoryRepositoryInterface>(),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => FavoriteRhymesBloc(
-              favoritesRepository: context.read<FavoritesRepositoryInterface>(),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => ThemeCubit(
-              settingsRepository: context.read<SettingsRepositoryInterface>(),
-            ),
-          ),
-        ],
-        child: child,
-      ),
-    );
-  }
-}
-
-class AppConfig {
-  final Box<HistoryRhymes> historyBox;
-  final Box<FavoriteRhymes> favoriteBox;
-  final SharedPreferences preferences;
-
-  AppConfig(this.historyBox, this.favoriteBox, this.preferences);
+Future<SharedPreferences> _initPrefs() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs;
 }
