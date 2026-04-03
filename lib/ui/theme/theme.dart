@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 final _primaryColor = const Color.fromARGB(255, 253, 44, 17);
