@@ -1,16 +1,60 @@
-# rhyme
+# Rhyme - поиск рифм
 
-A new Flutter project.
+Приложение на Flutter для поиска рифм.
 
-## Getting Started
+Проект выполнен на основе обучающего курса на YouTube:
+https://www.youtube.com/playlist?list=PLtUuja72DaLIywRDTLSSM5kMJLrbrUvbT
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## Цель
+Изучение современных подходов к разработке мобильных приложений и построению чистой, поддерживаемой архитектуры.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Описание
+Rhyme — это приложение, которое позволяет:
+
+- находить рифмы по заданному слову
+- сохранять понравившиеся рифмы в избранное
+- просматривать историю поиска
+
+---
+
+## Функциональность
+
+- поиск рифмы
+- добавление рифмы в избранное
+- просмотр избранного
+- просмотр истории поиска
+- очистка истории поиска
+- переключение темы приложения
+- push-уведомления для пользователей
+
+
+---
+
+## Технологии
+- **Flutter, Dart**
+- **State management:** flutter_bloc, cubit
+- **Навигация:** auto_route, bottomNavigationBar
+- **Интерфейс:** slivers, sliverList, sliverAppBar
+- **Работа с сетью:** dio, retrofit
+- **DI (Dependency Injection):** repositoryProvider
+- **Хранение данных:**
+    - hive_flutter — локальная база
+    - shared_preferences — настройки
+
+---
+
+## Что было реализовано
+- создать интерфейс с использованием slivers
+- созданы модели данных (рифмы, избранное, история) и организовано их хранение в Hive
+- спроектирована архитектура на основе BLoC (события и состояния)
+- реализовано управление состоянием через flutter_bloc
+- организован поиск рифм через API с помощью кодогенератора retrofit
+- реализованы светлая и тёмная темы с переключением через Cubit
+- настроено хранение пользовательских настроек (shared_preferences)
+- выполнена интеграция с Firebase для отправки push-уведомлений
+- реализовано внедрение зависимостей через RepositoryProvider
+
